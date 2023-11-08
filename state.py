@@ -1,0 +1,13 @@
+import oyaml as y
+
+class State:
+    def __init__(self) -> None:
+        pass    
+    
+    def write_state(): ...
+
+    def read_state(): ...
+
+    def get_object(): ...
+    
+    def check_state(): ...
