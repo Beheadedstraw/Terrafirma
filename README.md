@@ -1,52 +1,52 @@
-# YAPL
-Yet Another ~~Programming~~ sKrPtYnG Language
+# Terrafirma
+This is essentially my take on IaC using YAML as the primary template.
 
-YAPL was created purely out of boredom and a few beers. I wanted something that was pretty simple and in a coding format most people would recognize (YAML).
+Terrafirma is no where near production (nor dev really) ready. It can barely create resources at the moment with little ways of checking besides hard coded dry runs.
 
 A basic example is like this:
 ```yaml
-START:
-  - [PRINT, ["PRINTING TOTAL"]]
-  - [ADD, [2.5,2.2], $total_add]
-  - [PRINT, [$total_add," is the total"]]
-  - [OPEN_FILE, "test.txt", $test_file]
-  - [PRINT, [$test_file]]
-  - [READ_FILE, $test_file, $test]
-  - [LOOP, $test, [
-      [PRINT, [$line]],
-    ]]
-  - [PRINT, [$test]]
-  - [IF, $test, CONTAIN, "herp", [
-      [FUNCTION1],
-      [PRINT, ["This line contains herp"]]
-    ]]
+DEV: # Environment
+  Variables:            # Will eventually allow environment wide variables here
+    Provider: aws       # the cloud provider, as of this moment it's only AWS
 
-FUNCTION1:
-  - [PRINT, ["This Function method is working"]]
-  - [PRINT, ["And another one"]]
+  # VPC resource
+  Vpc1:                 
+    ResourceType: Vpc
+    VpcName: test
+    Cidr: 10.0.0.0/16
 
-  - [IF, $test, CONTAIN, "derp", [
-      [PRINT, ["This contains derp"]]
-    ],
-    [
-      [PRINT, ["This does NOT contain derp"]]
-    ]]
+  # Subnet Resource
+  Subnet1:
+    ResourceType: Subnet
+    VpcName: test
+    Cidr: 10.0.0.0/24
+    AZ: us-east-1a
+
+  # EC2 Instance Resources
+  TEST1:  #internal resource name
+    ResourceType: Instance
+    InstanceName: testing
+    InstanceType: t2.micro
+    ImageId: ami-058bd2d568351da34
+    KeyName: dev
+    SubnetId: Subnet1
+    MinCount: 1
+    MaxCount: 1
+
+  TEST2:  #internal resource name
+    ResourceType: Instance
+    InstanceName: testing2
+    InstanceType: t2.micro
+    ImageId: ami-058bd2d568351da34
+    KeyName: dev
+    SubnetId: Subnet1
+    MinCount: 1
+    MaxCount: 1
 ```
 
-Then we'd run it with `python main.py main.yaml`. 
-
-Currently YAPL is under heavily drunken development. Some of the Python dev's out there might scream at this code, be shocked, have a stroke, or maybe get a good chuckle. That's OK, because YAPL wasn't written to:
-
-* Be performant like C/Rust/Go/C++ or god forbid Java.
-* Have all the fancy bells and whistles like pointers, classes, or mutable/non-mutable variables (at least not yet)
-* Static/Private functions/variables? Lol, look elsewhere my friend.
-
-It's a pretty bare basic language. The basics of the basics.
-![image](https://github.com/Beheadedstraw/YAPL/assets/5951719/4ea36513-d4b3-4d00-ba1f-6ec72ffdf8f9)
+Then we'd run it with `python terrafirma.py tf.yaml`. 
 
 
-Anyways, if you wanna learn how this case study in Ballmer's Peak works, check out the barely updated docs [here](https://github.com/Beheadedstraw/YAPL/wiki).
 
-# There's currently zero exception handling right now and little to no error feedback besides Python crash dumps.
-![image](https://github.com/Beheadedstraw/YAPL/assets/5951719/64fec37c-4ccc-440a-b1d5-f0f92c416f1d)
+# Currently Terrafirma is under heavy development. There's currently little to no resource checking right now and little to no error feedback besides raw vPython crash dumps and/or API responses.
 
