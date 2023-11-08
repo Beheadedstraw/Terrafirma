@@ -34,7 +34,8 @@ def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group
                         }
                     ]
                 }
-            ], DryRun=dry_run
+            ], 
+            DryRun=dry_run
         )[0]
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
@@ -46,13 +47,25 @@ def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group
 def create_subnet(vpc_id, cidr_block, availability_zone, subnet_name, dry_run=True):
     ec2 = boto3.resource('ec2')
     try:
-        subnet = ec2.create_subnet(
+        response = ec2.create_subnet(
             VpcId=vpc_id,
             CidrBlock=cidr_block,
             AvailabilityZone=availability_zone,
-            DryRun=dry_run,
+            TagSpecifications=[
+                {
+                    'ResourceType': 'subnet',
+                    'Tags': [
+                        {
+                            'Key': 'Name',
+                            'Value': subnet_name
+                        }
+                    ]
+                }
+            ], 
+            DryRun=dry_run
         )
-        subnet.create_tags(Tags=[{"Key": "Name", "Value": subnet_name}])
+        print(response.id)
+        return response.id
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
             print("Dry run succeeded")
@@ -63,13 +76,22 @@ def create_subnet(vpc_id, cidr_block, availability_zone, subnet_name, dry_run=Tr
 def create_vpc(vpc_name, cidr_block, dry_run=True):
     ec2 = boto3.client('ec2')
     try:
-        response = ec2.create_vpc(CidrBlock=cidr_block, DryRun=dry_run)
+        response = ec2.create_vpc(
+            CidrBlock=cidr_block, 
+            TagSpecifications=[
+                {
+                    'ResourceType': 'vpc',
+                    'Tags': [
+                        {
+                            'Key': 'Name',
+                            'Value': vpc_name
+                        }
+                    ]
+                }
+            ],
+            DryRun=dry_run)
         print(response['Vpc']['VpcId'])
-
-        ec2.create_tags(
-            Resources=[RESOURCE],
-            Tags=[{'Key': 'Name', 'Value': vpc_name}]
-        )
+        
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
             print("Dry run succeeded")

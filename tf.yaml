@@ -18,8 +18,8 @@ DEV: #environment
     InstanceName: testing
     InstanceType: t2.micro
     ImageId: ami-058bd2d568351da34
-    KeyName: test
-    SubnetId: test
+    KeyName: dev
+    SubnetId: Subnet1
     MinCount: 1
     MaxCount: 1
 
@@ -28,8 +28,8 @@ DEV: #environment
     InstanceName: testing2
     InstanceType: t2.micro
     ImageId: ami-058bd2d568351da34
-    KeyName: test
-    SubnetId: test
+    KeyName: dev
+    SubnetId: Subnet1
     MinCount: 1
     MaxCount: 1
 

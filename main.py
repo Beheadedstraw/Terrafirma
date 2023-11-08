@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import oyaml as yaml
-from tokens import *
 
 #with open(sys.argv[1], "r") as file:
 with open("main.yaml", "r") as file:
