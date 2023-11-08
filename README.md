@@ -44,9 +44,9 @@ DEV: # Environment
     MaxCount: 1
 ```
 
-Then we'd run it with `python terrafirma.py tf.yaml`. 
+If you haven't already, AWS Credentials will need to be stored in `~/.aws/config`. Then we'd run it with `python terrafirma.py tf.yaml`.
 
 
 
-# Currently Terrafirma is under heavy development. There's currently little to no resource checking right now and little to no error feedback besides raw vPython crash dumps and/or API responses.
+# Currently Terrafirma is under heavy development. There's currently little to no resource checking right now and little to no error feedback besides raw Python crash dumps and/or API responses. Please use this wisely right now.
 
