@@ -22,6 +22,19 @@ Environment:
         
 Internal resource id's are not utilized as the actual resource name for more programmatic purposes.
 '''
+
+def process_variables(a):
+    b = copy.deepcopy(a)
+    for i, v in b[1].items():
+        #print(f"\n\nResource items in for loop for variable conversion: {i}")
+        if str(v)[0] == '$':
+            # We strip the dollar sign and split the variable by ENV.VARIABLES.ITEM.
+            #                                                    y[var[1]].y[var[2]].y[var[3]]
+            var = v[1:].split('.') 
+            a[1][i] = y[var[0]][var[1]][var[2]]
+            #print(f"Value of variable {i} is {a[1][i]}")
+            
+            
 #with open("tf.yaml", "r") as file:
 with open(sys.argv[1], "r") as file:
     y = yaml.safe_load(file)
@@ -34,8 +47,11 @@ for env in y:
             if a[0] == "Variables":
                 pass
             else:
-                print(a[1])
+                #print(a[1])
                 if a[1]['ResourceType'] == "Vpc":
+                    #replace variables with actual values in the dictionary
+                    process_variables(a)
+                    
                     print(f"""
                     ResourceInternalName: {a[0]}
                         ResourceType: {a[1]['ResourceType']}
@@ -44,9 +60,13 @@ for env in y:
                     """)
                     vpc_id = create_vpc(a[1]['VpcName'], a[1]['Cidr'],dry_run=DRYRUN)
                     RESOURCES["vpc"] = {a[1]['VpcName']: vpc_id}
-                    print(f"RESOURCES ARE NOW: {RESOURCES}")
+                    #print(f"RESOURCES ARE NOW: {RESOURCES}")
+                    print("-"*100)
                     
                 elif a[1]['ResourceType'] == "Subnet":
+                    #replace variables with actual values in the dictionary
+                    process_variables(a)
+                    
                     print(f"""
                     ResourceInternalName: {a[0]}
                         ResourceType: {a[1]['ResourceType']}
@@ -55,35 +75,33 @@ for env in y:
                             AZ: {a[1]['AZ']}
                     """)
                     RESOURCES['subnet'] = {a[0]:create_subnet(RESOURCES["vpc"][a[1]['VpcName']], a[1]['Cidr'], a[1]['AZ'], a[0], dry_run=DRYRUN)}
-                    print(RESOURCES)
+                    #print(RESOURCES)
+                    print("-"*100)
                     
                 elif a[1]['ResourceType'] == "Instance":
                     #replace variables with actual values in the dictionary
-                    b = copy.deepcopy(a)
-                    for i, v in b[1].items():
-                        print(f"\n\nResource items in for loop for variable conversion: {i}")
-                        if str(v)[0] == '$':
-                            # We strip the dollar sign and split the variable by ENV.VARIABLES.ITEM.
-                            #                                                    y[var[1]].y[var[2]].y[var[3]]
-                            var = v[1:].split('.') 
-                            a[1][i] = y[var[0]][var[1]][var[2]]
-                            print(f"Value of variable {i} is {a[1][i]}")
+                    process_variables(a)
                             
                     if "SecGroupIds" not in a[1]:
                         SecGroupIds = []
                     print(f"""
-                        ResourceInternalName: {a[0]}
-                            ResourceType: {a[1]['ResourceType']}
-                                InstanceName: {a[1]['InstanceName']}
-                                InstanceType: {a[1]['InstanceType']}
-                                ImageId: {a[1]['ImageId']}
-                                KeyName: {a[1]['KeyName']}
-                                SecGroupIds: {SecGroupIds}
-                                SubnetId: {a[1]['SubnetId']}
-                                MinCount: {a[1]['MinCount']}
-                                MaxCount: {a[1]['MaxCount']}
-                        """)
+                    ResourceInternalName: {a[0]}
+                        ResourceType: {a[1]['ResourceType']}
+                            InstanceName: {a[1]['InstanceName']}
+                            InstanceType: {a[1]['InstanceType']}
+                            ImageId: {a[1]['ImageId']}
+                            KeyName: {a[1]['KeyName']}
+                            SecGroupIds: {SecGroupIds}
+                            SubnetId: {a[1]['SubnetId']}
+                            MinCount: {a[1]['MinCount']}
+                            MaxCount: {a[1]['MaxCount']}
+                    """)
                     create_ec2_instance(a[1]['ImageId'], a[1]['InstanceType'], a[1]['KeyName'], SecGroupIds, RESOURCES['subnet'][a[1]['SubnetId']], a[1]['InstanceName'], dry_run=DRYRUN)
+                    print("-"*100)
+print(f"\n\nAPI RESOURCES DEFINED: {RESOURCES}")
+                    
+                    
+
 
 #if y['START']:
 #    START(y)

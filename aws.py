@@ -1,5 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError, DataNotFoundError
+import re
 
 ec2 = boto3.client('ec2')
 #response = ec2.describe_instances()
@@ -31,9 +32,12 @@ def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group
         )[0]
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
-            print("Dry run succeeded")
+            print("\t\t\tDry run succeeded")
         else:
-            print(f"Dry run failed, Reason: {e}")
+            if re.search("does not exist", e.response['Error'].get('Message')):
+                print(f"\n\t\t\tDry run may or may not have succeeded due to not being able to get API Id's. \n\t\t\tPlease check output to make sure everything is good.")
+            else:
+                print(f"\t\t\tDry run failed, Reason: {e}")
             
 
 def create_subnet(vpc_id, cidr_block, availability_zone, subnet_name, dry_run=True):
@@ -60,11 +64,16 @@ def create_subnet(vpc_id, cidr_block, availability_zone, subnet_name, dry_run=Tr
         return response.id
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
-            print("Dry run succeeded")
-            print(e.response)
+            print("\t\t\tDry run succeeded")
+            #print(e.response)
             return vpc_id
         else:
-            print(f"Dry run failed, Reason: {e}")
+            if re.search("does not exist",e.response['Error'].get('Message')):
+                print(f"\n\t\t\tDry run may or may not have succeeded due to not being able to get API Id's. \n\t\t\tPlease check output to make sure everything is good.")
+                return vpc_id
+            else:
+                print(f"\t\t\tDry run failed, Reason: {e}")
+                return vpc_id
           
             
 def create_vpc(vpc_name, cidr_block, dry_run=True):
@@ -88,9 +97,14 @@ def create_vpc(vpc_name, cidr_block, dry_run=True):
         
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
-            print("Dry run succeeded")
-            print(e.response)
+            print("\t\t\tDry run succeeded")
+            #print(e.response)
             return vpc_name
         else:
-            print(f"Dry run failed, Reason: {e}")
+            if re.search("does not exist", e.response['Error'].get('Message')):
+                print(f"\n\t\t\tDry run may or may not have succeeded due to not being able to get API Id's. \n\t\t\tPlease check output to make sure everything is good.")
+                return vpc_name
+            else:
+                print(f"\t\t\tDry run failed, Reason: {e}")
+                return vpc_name
     
