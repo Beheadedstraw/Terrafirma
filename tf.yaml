@@ -1,6 +1,7 @@
 DEV: #environment
   Variables:
     Provider: aws
+    ImageId: ami-058bd2d568351da34
 
   Vpc1:
     ResourceType: Vpc
@@ -17,7 +18,7 @@ DEV: #environment
     ResourceType: Instance
     InstanceName: testing
     InstanceType: t2.micro
-    ImageId: ami-058bd2d568351da34
+    ImageId: $DEV.Variables.ImageId
     KeyName: dev
     SubnetId: Subnet1
     MinCount: 1
@@ -27,21 +28,10 @@ DEV: #environment
     ResourceType: Instance
     InstanceName: testing2
     InstanceType: t2.micro
-    ImageId: ami-058bd2d568351da34
+    ImageId: $DEV.Variables.ImageId
     KeyName: dev
     SubnetId: Subnet1
     MinCount: 1
     MaxCount: 1
-
-#FUNCTION1:
-#  - [PRINT, ["This Function method is working"]]
-#  - [PRINT, ["And another one"]]
-#
-#  - [IF, $test, CONTAIN, "derp", [
-#      [PRINT, ["This contains derp"]]
-#    ],
-#    [
-#      [PRINT, ["This does NOT contain derp"]]
-#    ]]
   
   

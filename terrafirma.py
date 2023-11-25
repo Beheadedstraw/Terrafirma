@@ -3,9 +3,11 @@
 import oyaml as yaml
 from aws import *
 import json
+import sys
+import copy
 
-DRYRUN=False
-#with open(sys.argv[1], "r") as file:
+DRYRUN=True
+
 '''
 Terrafirma yaml files are formatted like so:
 
@@ -20,18 +22,19 @@ Environment:
         
 Internal resource id's are not utilized as the actual resource name for more programmatic purposes.
 '''
-
-with open("tf.yaml", "r") as file:
+#with open("tf.yaml", "r") as file:
+with open(sys.argv[1], "r") as file:
     y = yaml.safe_load(file)
 RESOURCES = {}
 for env in y:
     print(f"Environment: {env}")
     for resources in y.items():
         attributes = resources[1].items()   #Pull the environment dicts
-        for a in resources:                 #Start going through the resources
+        for a in attributes:                 #Start going through the resources
             if a[0] == "Variables":
                 pass
             else:
+                print(a[1])
                 if a[1]['ResourceType'] == "Vpc":
                     print(f"""
                     ResourceInternalName: {a[0]}
@@ -41,7 +44,7 @@ for env in y:
                     """)
                     vpc_id = create_vpc(a[1]['VpcName'], a[1]['Cidr'],dry_run=DRYRUN)
                     RESOURCES["vpc"] = {a[1]['VpcName']: vpc_id}
-                    print(f"{RESOURCES}")
+                    print(f"RESOURCES ARE NOW: {RESOURCES}")
                     
                 elif a[1]['ResourceType'] == "Subnet":
                     print(f"""
@@ -53,7 +56,19 @@ for env in y:
                     """)
                     RESOURCES['subnet'] = {a[0]:create_subnet(RESOURCES["vpc"][a[1]['VpcName']], a[1]['Cidr'], a[1]['AZ'], a[0], dry_run=DRYRUN)}
                     print(RESOURCES)
+                    
                 elif a[1]['ResourceType'] == "Instance":
+                    #replace variables with actual values in the dictionary
+                    b = copy.deepcopy(a)
+                    for i, v in b[1].items():
+                        print(f"\n\nResource items in for loop for variable conversion: {i}")
+                        if str(v)[0] == '$':
+                            # We strip the dollar sign and split the variable by ENV.VARIABLES.ITEM.
+                            #                                                    y[var[1]].y[var[2]].y[var[3]]
+                            var = v[1:].split('.') 
+                            a[1][i] = y[var[0]][var[1]][var[2]]
+                            print(f"Value of variable {i} is {a[1][i]}")
+                            
                     if "SecGroupIds" not in a[1]:
                         SecGroupIds = []
                     print(f"""

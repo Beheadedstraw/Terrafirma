@@ -8,6 +8,7 @@ A basic example is like this:
 DEV: # Environment
   Variables:            # Will eventually allow environment wide variables here
     Provider: aws       # the cloud provider, as of this moment it's only AWS
+    ImageId: ami-058bd2d568351da34
 
   # VPC resource
   Vpc1:                 
@@ -27,7 +28,7 @@ DEV: # Environment
     ResourceType: Instance
     InstanceName: testing
     InstanceType: t2.micro
-    ImageId: ami-058bd2d568351da34
+    ImageId: $DEV.Variables.ImageId
     KeyName: dev
     SubnetId: Subnet1
     MinCount: 1
@@ -37,7 +38,7 @@ DEV: # Environment
     ResourceType: Instance
     InstanceName: testing2
     InstanceType: t2.micro
-    ImageId: ami-058bd2d568351da34
+    ImageId: $DEV.Variables.ImageId
     KeyName: dev
     SubnetId: Subnet1
     MinCount: 1

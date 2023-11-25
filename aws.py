@@ -2,16 +2,8 @@ import boto3
 from botocore.exceptions import ClientError, DataNotFoundError
 
 ec2 = boto3.client('ec2')
-response = ec2.describe_instances()
-print(response)
-
-AMI = "ami-058bd2d568351da34"
-TYPE = "t2.micro"
-KEY = "dev"
-SUBNET = ""
-NAME = "testing"
-SECGROUP = []
-RESOURCE = None
+#response = ec2.describe_instances()
+#print(response)
 
 def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group_ids=[], subnet_id="", instance_name="", dry_run=True):
     ec2 = boto3.resource('ec2')
@@ -69,6 +61,8 @@ def create_subnet(vpc_id, cidr_block, availability_zone, subnet_name, dry_run=Tr
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
             print("Dry run succeeded")
+            print(e.response)
+            return vpc_id
         else:
             print(f"Dry run failed, Reason: {e}")
           
@@ -96,8 +90,7 @@ def create_vpc(vpc_name, cidr_block, dry_run=True):
         if e.response['Error'].get('Code') == 'DryRunOperation':
             print("Dry run succeeded")
             print(e.response)
+            return vpc_name
         else:
             print(f"Dry run failed, Reason: {e}")
-    finally:
-        return response['Vpc']['VpcId']
     
