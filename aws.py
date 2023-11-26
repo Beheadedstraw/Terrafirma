@@ -6,7 +6,7 @@ ec2 = boto3.client('ec2')
 #response = ec2.describe_instances()
 #print(response)
 
-def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group_ids=[], subnet_id="", instance_name="", dry_run=True):
+def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group_ids=[], subnet_id="", instance_name="", public_ip=False, dry_run=True):
     ec2 = boto3.resource('ec2')
     try:
         instance = ec2.create_instances(
@@ -14,7 +14,7 @@ def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group
             InstanceType=instance_type,
             KeyName=key_name,
             SecurityGroupIds=security_group_ids,
-            SubnetId=subnet_id,
+            #SubnetId=subnet_id,
             MinCount=1,
             MaxCount=1,
             TagSpecifications=[
@@ -28,7 +28,15 @@ def create_ec2_instance(ami_id="", instance_type="", key_name="", security_group
                     ]
                 }
             ], 
-            DryRun=dry_run
+            DryRun=dry_run,
+            NetworkInterfaces=[
+                {
+                    'DeviceIndex': 0,
+                    'SubnetId': subnet_id,
+                    'Groups': security_group_ids,
+                    'AssociatePublicIpAddress': public_ip
+                }
+            ]
         )[0]
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
@@ -94,6 +102,7 @@ def create_vpc(vpc_name, cidr_block, dry_run=True):
             ],
             DryRun=dry_run)
         print(response['Vpc']['VpcId'])
+        return response['Vpc']['VpcId']
         
     except ClientError as e:
         if e.response['Error'].get('Code') == 'DryRunOperation':
@@ -107,4 +116,16 @@ def create_vpc(vpc_name, cidr_block, dry_run=True):
             else:
                 print(f"\t\t\tDry run failed, Reason: {e}")
                 return vpc_name
+            
+def terminate_instance(key_name):
+    ec2 = boto3.resource('ec2')
+
+    # Find instances with the specified key name
+    instances = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': [key_name]}])
+
+    # Terminate each instance
+    for instance in instances:
+        print(instance)
+        instance.terminate()
+        print(f"Terminating instance with ID: {instance.id}")
     

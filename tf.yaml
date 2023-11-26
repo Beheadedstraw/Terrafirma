@@ -23,6 +23,7 @@ DEV: #environment
     SubnetId: Subnet1
     MinCount: 1
     MaxCount: 1
+    PublicIp: True
 
   TEST2:  #internal resource name
     ResourceType: Instance
@@ -33,5 +34,6 @@ DEV: #environment
     SubnetId: Subnet1
     MinCount: 1
     MaxCount: 1
+    PublicIp: False
   
   
