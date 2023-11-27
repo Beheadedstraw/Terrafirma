@@ -1,7 +1,7 @@
 # Terrafirma
 This is essentially my take on IaC using YAML as the primary template.
 
-Terrafirma is no where near production (nor dev really) ready. It can barely create resources at the moment with little ways of checking besides hard coded dry runs.
+Terrafirma is no where near production (nor dev really) ready. It can barely create/destroy resources at the moment with no state management (yet!). 
 
 A basic example is like this:
 ```yaml
