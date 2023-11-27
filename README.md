@@ -3,7 +3,7 @@ This is essentially my take on IaC using YAML as the primary template.
 
 Terrafirma is no where near production (nor dev really) ready. It can barely create/destroy resources at the moment with no state management (yet!). 
 
-A basic example is like this:
+A basic example named `tf.yaml`:
 ```yaml
 DEV: # Environment
   Variables:            # Will eventually allow environment wide variables here
@@ -45,7 +45,7 @@ DEV: # Environment
     MaxCount: 1
 ```
 
-If you haven't already, AWS Credentials will need to be stored in `~/.aws/config`. Then we'd run it with `python terrafirma.py tf.yaml`.
+If you haven't already, AWS Credentials will need to be stored in `~/.aws/config`. Then we'd run it with `python terrafirma.py tf.yaml create`. By default it will always run a dryrun (aka basic testing while not modifying the live environment) and will require `nodry` on the end of the command to push to said live environment.
 
 
 
