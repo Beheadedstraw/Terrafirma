@@ -127,12 +127,13 @@ RESOURCES = {}
 #check if were setting nodry, which means this will deploy to a live env                            
 if sys.argv.__len__() > 2:      
     if sys.argv[2] == "create":
-        if sys.argv[3] == "nodry":
-            DRYRUN=False
-            print("!"*100)
-            print("!!!!!!!!!!!!!!----       nodry is set - Deploying to live environment!           ----!!!!!!!!!!!!!!!")
-            print("!"*100)
-            create_aws(y)
+        if sys.argv.__len__() > 3: 
+            if sys.argv[3] == "nodry":
+                DRYRUN=False
+                print("!"*100)
+                print("!!!!!!!!!!!!!!----       nodry is set - Deploying to live environment!           ----!!!!!!!!!!!!!!!")
+                print("!"*100)
+                create_aws(y)
         else:
             DRYRUN=True
             print("#"*100)
@@ -152,8 +153,8 @@ if sys.argv.__len__() > 2:
         if confirm == "YES_DESTROY_IT":
             DRYRUN=False
             print("#"*100)
-            print("############----                 nodry is NOT set - Doing a dry run.               ----#############")
-            print("############----         API ID's will be replaced with the resource name          ----#############")
+            print("############----                     DESTROYING RESOURCES NOW                      ----#############")
+            print("############----               SAY A LITTLE PRAYER AND GRAB A COFFEE               ----#############")
             print("#"*100)
             destroy_aws(y)
         else:

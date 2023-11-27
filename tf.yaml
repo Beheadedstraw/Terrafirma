@@ -1,7 +1,8 @@
 DEV: #environment
   Variables:
     Provider: aws
-    ImageId: ami-058bd2d568351da34
+    ImageId: ami-0fc5d935ebf8bc3bc
+    SecurityGroups: sg-0b5e9584cae1f388e
 
   Vpc1:
     ResourceType: Vpc
